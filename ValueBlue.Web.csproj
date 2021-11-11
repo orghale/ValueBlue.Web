@@ -13,6 +13,12 @@
 
   <ItemGroup>
     <Folder Include="Controllers\" />
+    <Folder Include="BussinessLogic\" />
+    <Folder Include="Domain\" />
+    <Folder Include="Exceptions\" />
+    <Folder Include="Extension\" />
+    <Folder Include="Common\" />
+    <Folder Include="Service\" />
   </ItemGroup>
 
 
