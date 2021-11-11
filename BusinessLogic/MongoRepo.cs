@@ -92,7 +92,6 @@ namespace ValueBlue.Web.BusinessLogic
                 var eqFilterDefinition = eqfilter.Eq(x => x.Title, request.Title);
                 var updateFilter = Builders<OmdbEntity>.Update;
                 var updateFilterDefinition = updateFilter.Set(x =>
-                    //x.Name , newFile.Name 
                     x.doc, request.doc
                 );
 

@@ -5,7 +5,13 @@ using System.Threading.Tasks;
 
 namespace ValueBlue.Web.Models
 {
-    public class OmdbEntity
+    public class Rating
+    {
+        public string Source { get; set; }
+        public string Value { get; set; }
+    }
+
+    public class ApiResponseEntity
     {
         public string Title { get; set; }
         public string Year { get; set; }
@@ -21,14 +27,13 @@ namespace ValueBlue.Web.Models
         public string Country { get; set; }
         public string Awards { get; set; }
         public string Poster { get; set; }
+        public List<Rating> Ratings { get; set; }
         public string Metascore { get; set; }
-        public string omdbRating { get; set; }
-        public string omdbVotes { get; set; }
-        public string omdbID { get; set; }
+        public string imdbRating { get; set; }
+        public string imdbVotes { get; set; }
+        public string imdbID { get; set; }
         public string Type { get; set; }
+        public string totalSeasons { get; set; }
         public string Response { get; set; }
-        public object doc { get; set; }
     }
-
-
 }
