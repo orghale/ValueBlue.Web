@@ -48,7 +48,7 @@ namespace ValueBlue.Web.BusinessLogic
             try
             {
                 var filter = Builders<OmdbEntity>.Filter;
-                var eqFilter = filter.Eq(x => x.omdbID, id);
+                var eqFilter = filter.Eq(x => x.imdbID, id);
 
                 var file = await dbCollection.FindAsync<OmdbEntity>(eqFilter);
                 result.Status = true;
@@ -69,7 +69,7 @@ namespace ValueBlue.Web.BusinessLogic
             try
             {
                 var filter = Builders<OmdbEntity>.Filter;
-                var eqFilter = filter.Eq(x => x.omdbID, id);
+                var eqFilter = filter.Eq(x => x.imdbID, id);
 
                 var res = await dbCollection.DeleteOneAsync(eqFilter);
                 result.Status = res.IsAcknowledged;

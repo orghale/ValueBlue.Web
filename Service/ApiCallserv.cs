@@ -11,7 +11,7 @@ using ValueBlue.Web.Service.Interface;
 
 namespace ValueBlue.Web.Service
 {
-    public class ApiCallserv: IApiCallserv
+    public class ApiCallserv : IApiCallserv
     {
         private static Logger Log = LogManager.GetCurrentClassLogger();
         private readonly IApiCoreService _api;
@@ -28,19 +28,22 @@ namespace ValueBlue.Web.Service
             ApiCallServObj result = new ApiCallServObj();
             try
             {
-                Log.Debug($"PASS A -- > Get Async call serv request ID: {requestId}");//?apikey=[yourkey]&
+                Log.Debug($"[CallServGetAsync]PASS A -- > Get Async call serv request ID: {requestId}");
 
-                Log.Debug($"PASS B -- > Base Url: {_config.CommonEndpoint.BaseUrl}/ request ID: {requestId}");
+                Log.Debug($"[CallServGetAsync]PASS B -- > Base Url: {_config.CommonEndpoint.BaseUrl}/ request ID: {requestId}");
+
                 string ep = $"?apikey{_config.CommonEndpoint.Apikey}{sbBuilder(e.epParam)}";
 
                 var apiResponse = await _api.CallGetAsync($"{_config.CommonEndpoint.BaseUrl}{ep}");
+
+                result.responseInterval = apiResponse.ResponseTime;
 
                 if (apiResponse.Status)
                 {
                     result.apiResponse = JsonConvert.DeserializeObject<ApiResponseEntity>(apiResponse.ResponseObject.ToString());
                     result.Status = apiResponse.Status;
 
-                    Log.Debug($"PASS D -- > Api response: {result.apiResponse}/ request ID: {requestId}");
+                    Log.Debug($"[CallServGetAsync]PASS D -- > Api service response body: {apiResponse.ResponseObject}/ request ID: {requestId}");
                 }
                 else
                 {
@@ -63,7 +66,6 @@ namespace ValueBlue.Web.Service
             {
                 sb.Append($"&{p.key}={p.value}");
             }
-
             return sb.ToString();
         }
 

@@ -24,9 +24,7 @@ namespace ValueBlue.Web.Models
     public class ApiKeyConfig
     {
         public string Secret { get; set; }
-        public string Issuer { get; set; }
-        public string TokenLifeTime { get; set; }
-        public int RefreshTokenExpiryInDays { get; set; }
+       
     }
 
     public class Mongo
@@ -40,6 +38,7 @@ namespace ValueBlue.Web.Models
     public class CommonEndpoint
     {
         public string BaseUrl { get; set; }
+        public string ImageUrl { get; set; }
         public string Apikey { get; set; }
     }
 

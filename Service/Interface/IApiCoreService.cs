@@ -8,6 +8,7 @@ namespace ValueBlue.Web.Service.Interface
 {
     public interface IApiCoreService
     {
-        Task<ApiModel> CallGetAsync(string requestUri);
+        Task<ApiModel> CallGetAsync(string requestUri, string requestId = null);
+        Task<ApiModel> DownloadImageAsync(Uri uri, string requestId = null);
     }
 }
