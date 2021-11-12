@@ -24,6 +24,17 @@ L. Merge to master from dev branch done
 
 Project TargetFramework = netcoreapp3.1
 
+
+The following endpoints were implemented:
+
+api/Search/{title}: Retrieve OMDB info by title search
+api/Admin/all: Get all movies searched by users
+api/Admin/title/{title}: Get searched movie by title
+api/Admin/daterange/{startDate}/{endDate}: Get searched movies by date range
+api/Admin/report/{date}: Get searched movies report by date
+api/Admin/delete/{title}: Delete searched movie by title
+
+
 NOTE: The following configuration files and settings are essential to run the service.
 Configuration file: appsettings.json
 
