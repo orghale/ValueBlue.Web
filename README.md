@@ -26,8 +26,11 @@ Project TargetFramework = netcoreapp3.1
 
 NOTE: The following configuration files and settings are essential to run the service.
 Configuration file: appsettings.json
+
 Api-Key: key = "ApiKey", Value = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+And should be passed in the header
 AppConfigs.ApiKeyConfig.Secret : holds Api-key value. 
+
 AppConfigs.mongo : holds values for mongodb connections
 	.Ip = mongoDb installation ip address
 	.Port = port
