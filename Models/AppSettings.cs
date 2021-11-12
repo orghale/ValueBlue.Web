@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ValueBlue.Web.Models
 {
-   
+
     public class LogLevel
     {
         public string Default { get; set; }
@@ -24,7 +24,6 @@ namespace ValueBlue.Web.Models
     public class ApiKeyConfig
     {
         public string Secret { get; set; }
-       
     }
 
     public class Mongo
@@ -33,6 +32,8 @@ namespace ValueBlue.Web.Models
         public int Port { get; set; }
         public string User { get; set; }
         public string Secret { get; set; }
+        public string Db { get; set; }
+        public string Collections { get; set; }
     }
 
     public class CommonEndpoint
@@ -49,4 +50,6 @@ namespace ValueBlue.Web.Models
         public Mongo mongo { get; set; }
         public CommonEndpoint CommonEndpoint { get; set; }
     }
+   
+
 }

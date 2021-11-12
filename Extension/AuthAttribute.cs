@@ -30,7 +30,7 @@ namespace ValueBlue.Web.Extension
             }
 
             var appSettings = context.HttpContext.RequestServices.GetRequiredService<IConfiguration>();
-            var apiKey = appSettings.GetSection("ApiKeyConfig").GetValue<string>("Secret");
+            var apiKey = appSettings.GetSection("AppConfigs").GetSection("ApiKeyConfig").GetValue<string>("Secret");
 
             if (!apiKey.Equals(extractedApiKey))
             {

@@ -16,6 +16,8 @@ namespace ValueBlue.Web
             services.AddScoped<IMongoRepo, MongoRepo>();
             services.AddScoped<IApiCoreService, ApiCoreService>();
             services.AddScoped<IApiCallserv, ApiCallserv>();
+            services.AddScoped<ISearchMovie, SearchMovie>();
+            services.AddScoped<IFetchMovieDb, FetchMovieDb>();
 
             services.TryAddSingleton<IActionContextAccessor, ActionContextAccessor>();
 

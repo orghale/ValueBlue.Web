@@ -9,6 +9,8 @@ namespace ValueBlue.Web.Models
     {
         public bool Status { get; set; }
         public object ResponseObject { get; set; }
+        public IEnumerable<OmdbDto> ResponseObjects { get; set; }
+        public IEnumerable<UsageReport>  usages { get; set; }
         public string Message { get; set; }
     }
    
