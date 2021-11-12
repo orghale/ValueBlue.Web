@@ -71,15 +71,3 @@ Directory may be change by editing the nlog.config file
 
 
 ============================================================================
-Test Results
-library(omdbapi)
-library(testthat)
-
-date()
-#> [1] "Fri Nov 12 06:23:51 2021"
-
-test_dir("tests/")
-#> testthat results ================================================================
-#> OK: 0 SKIPPED: 0 FAILED: 0
-#> 
-#> DONE ===========================================================================
