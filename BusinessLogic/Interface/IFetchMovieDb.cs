@@ -12,7 +12,7 @@ namespace ValueBlue.Web.BusinessLogic.Interface
         Task<CommonResObj> GetMovieFromDb(string title, string requestId);
         Task<CommonResObj> GetMoviesRangeFromDb(string date1, string date2, string requestId);
         Task<CommonResObj> GenerateMovieReport(string date, string requestId);
+        Task<CommonResObj> GenerateMovieReportByTile(string title, string requestId);
         Task<CommonResObj> DeleteMovie(string id, string requestId);
-    
     }
 }

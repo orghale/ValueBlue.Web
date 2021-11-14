@@ -12,9 +12,9 @@ namespace ValueBlue.Web.BusinessLogic
     public class FetchMovieDb : IFetchMovieDb
     {
         private static Logger Log = LogManager.GetCurrentClassLogger();
-        private readonly IApiCallserv _callserv;
+        private readonly ISearchMovie _callserv;
         private readonly IMongoRepo _mongo;
-        public FetchMovieDb(IApiCallserv callserv, IMongoRepo mongo)
+        public FetchMovieDb(ISearchMovie callserv, IMongoRepo mongo)
         {
             _callserv = callserv;
             _mongo = mongo;
@@ -30,7 +30,7 @@ namespace ValueBlue.Web.BusinessLogic
             }
             catch (Exception e)
             {
-                Log.Error($"[FetchMovieDb:GetMovieFromDb] Get all movie error:: exception:{e}/processId: {requestId}");
+                Log.Error($"[FetchMovieDb:GetAllMovieFromDb] Get all movie error:: exception:{e}/processId: {requestId}");
                 result = null;
             }
             return result;
@@ -62,7 +62,7 @@ namespace ValueBlue.Web.BusinessLogic
             }
             catch (Exception e)
             {
-                Log.Error($"[FetchMovieDb:GetMoviesFromDb] Get movie range error:: exception:{e}/processId: {requestId}");
+                Log.Error($"[FetchMovieDb:GetMoviesRangeFromDb] Get movie range error:: exception:{e}/processId: {requestId}");
                 result = null;
             }
             return result;
@@ -77,7 +77,22 @@ namespace ValueBlue.Web.BusinessLogic
             }
             catch (Exception e)
             {
-                Log.Error($"[FetchMovieDb:GetMovieFromDb] Generate report error:: exception:{e}/processId: {requestId}");
+                Log.Error($"[FetchMovieDb:GenerateMovieReport] Generate report error:: exception:{e}/processId: {requestId}");
+                result = null;
+            }
+            return result;
+        }
+
+        public async Task<CommonResObj> GenerateMovieReportByTile(string title, string requestId)
+        {
+            CommonResObj result = new CommonResObj();
+            try
+            {
+                result = await _mongo.GenerateReportByTitle(title, requestId);
+            }
+            catch (Exception e)
+            {
+                Log.Error($"[FetchMovieDb:GenerateMovieReportByTile] Generate report by title error:: exception:{e}/processId: {requestId}");
                 result = null;
             }
             return result;
@@ -92,12 +107,11 @@ namespace ValueBlue.Web.BusinessLogic
             }
             catch (Exception e)
             {
-                Log.Error($"[FetchMovieDb:GetMovieFromDb] Delete movie error:: exception:{e}/processId: {requestId}");
+                Log.Error($"[FetchMovieDb:DeleteMovie] Delete movie error:: exception:{e}/processId: {requestId}");
                 result = null;
             }
             return result;
         }
-
 
     }
 

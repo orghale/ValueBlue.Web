@@ -20,9 +20,9 @@ namespace ValueBlue.Web.BusinessLogic
             _mongo = mongo;
         }
 
-        public async Task<ApiResponseEntity> GetMovieFromOmdbApi(string title, string ip, string requestId)
+        public async Task<ImageSearchResponse> GetMovieFromOmdbApi(string title, string ip, string requestId)
         {
-            ApiResponseEntity result;
+            ImageSearchResponse result;
             try
             {
                 var param = new List<Param>
@@ -36,37 +36,78 @@ namespace ValueBlue.Web.BusinessLogic
 
                 if (res.Status)
                 {
-                    result = (ApiResponseEntity)res.apiResponse;
-                    //result = new ApiResponseEntity();
-                    if (result.Response is "True")
+                    var resObj = new OmdbEntity();
+
+                    var response = (ApiResponseEntity)res.apiResponse;
+
+                    if (response.Response is "True")
                     {
-                        var resObj = new OmdbEntity
+                        //if (!await _mongo.IsExist(response.Title, requestId))
+                        //{
+                            resObj.imdbID = response.imdbID;
+                            resObj.ip_address = ip;
+                            resObj.processing_time_ms = res.responseInterval;
+                            resObj.search_token = title.ToUpper().Trim();
+
+                            ApiCallServObj imgResult = await _callserv.CallServGetPosterImageAsync(response.Poster, requestId);
+
+                            resObj.Doc = imgResult.Status ? (string)imgResult.apiResponse : null;
+
+                            await _mongo.Add(resObj, requestId);
+                        //}
+
+                        result = new ImageSearchResponse
                         {
-                            imdbID = result.imdbID,
-                            ip_address = ip,
-                            processing_time_ms = res.responseInterval,
-                            search_token = title
+                            Status = res.Status,
+                            entity = response,
+                            Image = resObj.Doc is null ? null : (string)resObj.Doc
                         };
 
-                        ApiCallServObj imgResult = await _callserv.CallServGetPosterImageAsync(result.Poster, requestId);
+                        return result;
 
-                        resObj.Doc = imgResult.Status ? (string)imgResult.apiResponse : null;
-
-                        await _mongo.Add(resObj, requestId);
                     }
                 }
-                else
+                result = new ImageSearchResponse
                 {
-                    result = new ApiResponseEntity { Response = (string)res.Message } ;
-                }
+                    Status = res.Status,
+                    entity = new ApiResponseEntity
+                    {
+                        Response = (string)res.Message
+                    }
+                };
             }
             catch (Exception e)
             {
-                Log.Error($"[SearchMovie:GetMovie]Get movie error:: exception:{e}/processId: {requestId}");
+                Log.Error($"[SearchMovie:GetMovieFromOmdbApi]Get movie error:: exception:{e}/processId: {requestId}");
                 result = null;
             }
             return result;
         }
+
+        public async Task<CommonResObj> GetMoviePoster(string title, string ip, string requestId)
+        {
+            CommonResObj result = new CommonResObj();
+            try
+            {
+                result = await _mongo.GetSingle(title, requestId);
+                if (!result.Status || result.ResponseObject is null)
+                {
+                    var res = await GetMovieFromOmdbApi(title, ip, requestId);
+
+                    result.Message = res.Status ? (string)res.Image : null;
+                    result.Status = res.Status;
+                }
+                else
+                    result.Message = (string)((OmdbEntity)result.ResponseObject).Doc;
+            }
+            catch (Exception e)
+            {
+                Log.Error($"[SearchMovie:GetMoviePoster] Get movie error:: exception:{e}/processId: {requestId}");
+                result = null;
+            }
+            return result;
+        }
+
     }
 
 }

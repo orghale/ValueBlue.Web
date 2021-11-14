@@ -21,7 +21,7 @@ namespace ValueBlue.Web.Controllers
         }
 
         [HttpGet]
-        [Route("{title}")]
+        [Route("GetByTitle/{title}")]
         [ProducesResponseType(typeof(ApiResponseEntity), 200)]
         [ProducesResponseType(typeof(string), 400)]
         [ProducesResponseType(typeof(string), 404)]
@@ -34,19 +34,23 @@ namespace ValueBlue.Web.Controllers
 
             try
             {
-                string ip = Request.Host.Host;
 
                 log.Info($"[{Request.Path.Value}] - Get movie by title request:: title:{title}/ processId:{processId}");
+               
                 if (string.IsNullOrWhiteSpace(title))
                     return BadRequest(ConstMessage.BAD_REQUEST);
+               
+                string ip = Request.Host.Host;
 
-                result = await _callserv.GetMovieFromOmdbApi(title, ip, processId);
+                var response = await _callserv.GetMovieFromOmdbApi(title, ip, processId);
 
-                if (result is null)
+                if (response is null)
                     return StatusCode(500, ConstMessage.INTERNAL_ERROR);
 
-                if (result.Response != "True")
-                    return NotFound(result.Response);
+                if (response.entity.Response != "True")
+                    return NotFound(response.entity.Response);
+
+                result = response.entity;
             }
             catch (Exception ex)
             {
@@ -58,6 +62,52 @@ namespace ValueBlue.Web.Controllers
             return Ok(result);
         }
 
+
+        [HttpGet]
+        [Route("GetMoviePoster/{title}")]
+        [ProducesResponseType(typeof(ImageResponse), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string), 404)]
+        [ProducesResponseType(typeof(string), 500)]
+        public async Task<IActionResult> GetMoviePoster(string title)
+        {
+            var processId = $"{Guid.NewGuid()}";
+
+            var result = string.Empty;
+
+            try
+            {
+                log.Info($"[{Request.Path.Value}] - Get movie poster image request:: Title:{title} processId:{processId}");
+
+                if (string.IsNullOrWhiteSpace(title))
+                    return BadRequest(ConstMessage.BAD_REQUEST);
+
+                string ip = Request.Host.Host;
+
+                var res = await _callserv.GetMoviePoster(title, ip, processId);
+
+                if (res is null)
+                    return StatusCode(500, ConstMessage.INTERNAL_ERROR);
+
+                if (res.Status)
+                {
+                    result = (string)res.Message;
+                }
+                else
+                {
+                    return NotFound((string)res.Message);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                log.Error($"Get movie poster image by title internal error:: exception:{ex}/processId: {processId}");
+                return StatusCode(500, ConstMessage.INTERNAL_ERROR);
+            }
+            log.Info($"Get movie poster image title response:: processId:{processId}");
+
+            return Ok(new ImageResponse { Status = true, Image = result });
+        }
 
     }
 }
