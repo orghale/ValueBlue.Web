@@ -302,7 +302,7 @@ namespace ValueBlue.Web.Controllers
                 return StatusCode(500, ConstMessage.INTERNAL_ERROR);
             }
 
-            log.Info($"Generate movies report by title response:: Date:{title}/ processId:{processId}");
+            log.Info($"Generate movies report by title response:: Title:{title}/ processId:{processId}");
 
             return Ok(result);
         }
