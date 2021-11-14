@@ -31,6 +31,7 @@ namespace ValueBlue.Web.BusinessLogic
             CommonResObj result = new CommonResObj();
             try
             {
+                //if (! await IsExist(request.search_token, processId))
                 await dbCollection.InsertOneAsync(request);
                 result.Status = true;
             }
@@ -49,7 +50,7 @@ namespace ValueBlue.Web.BusinessLogic
             try
             {
                 var filter = Builders<OmdbEntity>.Filter;
-                var eqFilter = filter.Eq(x => x.search_token, id);
+                var eqFilter = filter.Eq(x => x.search_token, id.ToUpper().Trim());
 
                 var movie = await dbCollection.FindAsync<OmdbEntity>(eqFilter);
                 result.Status = true;
@@ -91,9 +92,12 @@ namespace ValueBlue.Web.BusinessLogic
             CommonResObj result = new CommonResObj();
             try
             {
+                var dt1 = DateTime.ParseExact(date1, "dd-MM-yyyy", null);
+                var dt2 = DateTime.ParseExact($"{date2}T23:59:59", "dd-MM-yyyyTHH:mm:ss", null);
+
                 var filter = Builders<OmdbEntity>.Filter;
-                var minNumberFilter = filter.Lte(x => x.timestamp, DateTime.Parse(date2));
-                var maxNumberFilter = filter.Gte(x => x.timestamp, DateTime.Parse(date1));
+                var maxNumberFilter = filter.Lte(x => x.timestamp, dt2);
+                var minNumberFilter = filter.Gte(x => x.timestamp, dt1);
 
                 var finalFilter = filter.And(minNumberFilter, maxNumberFilter);
 
@@ -117,9 +121,9 @@ namespace ValueBlue.Web.BusinessLogic
             CommonResObj result = new CommonResObj();
             try
             {
-                DateTime dt1 = DateTime.ParseExact(date,"dd-MM-yyyy",null);
+                DateTime dt1 = DateTime.ParseExact(date, "dd-MM-yyyy", null);
                 DateTime dt2 = dt1.AddDays(1);
-                
+
                 var res = dbCollection.Aggregate().Match(r => r.timestamp >= dt1 && r.timestamp < dt2).Unwind<OmdbEntity, OmdbEntity>
                       (x => x.timestamp)
                       .Group(x => x.timestamp, g => new
@@ -143,6 +147,31 @@ namespace ValueBlue.Web.BusinessLogic
         }
 
 
+        public async Task<CommonResObj> GenerateReportByTitle(string title, string processId = null)
+        {
+            CommonResObj result = new CommonResObj();
+            try
+            {
+                var res = dbCollection.Aggregate().Match(r => r.search_token == title.ToUpper().Trim()).Unwind<OmdbEntity, OmdbEntity>
+                      (x => x.timestamp)
+                      .Group(x => x.search_token, g => new
+                      {
+                          Count = g.Count()
+                      }).As<RequestStatByTitle>().ToList();
+
+                result.TitleRpts = res;
+                result.Status = true;
+
+            }
+            catch (Exception ex)
+            {
+                log.Error($"[MongoRepo] Generate aggregation by title error:: processId:{processId} Exception: {ex}");
+                result.Message = new ErrorHanler(ex.Message.ToString()).Message;
+                result.Status = false;
+            }
+            return result;
+        }
+
 
         public async Task<CommonResObj> Delete(string id, string processId = null)
         {
@@ -150,7 +179,7 @@ namespace ValueBlue.Web.BusinessLogic
             try
             {
                 var filter = Builders<OmdbEntity>.Filter;
-                var eqFilter = filter.Eq(x => x.search_token, id);
+                var eqFilter = filter.Eq(x => x.search_token, id.ToUpper().Trim());
 
                 var res = await dbCollection.DeleteOneAsync(eqFilter);
                 result.Status = res.IsAcknowledged;
@@ -164,13 +193,14 @@ namespace ValueBlue.Web.BusinessLogic
             return result;
         }
 
+
         public async Task<CommonResObj> Update(OmdbEntity request, string processId = null)
         {
             CommonResObj result = new CommonResObj();
             try
             {
                 var eqfilter = Builders<OmdbEntity>.Filter;
-                var eqFilterDefinition = eqfilter.Eq(x => x.search_token, request.search_token);
+                var eqFilterDefinition = eqfilter.Eq(x => x.search_token, request.search_token.ToUpper().Trim());
                 var updateFilter = Builders<OmdbEntity>.Update;
                 var updateFilterDefinition = updateFilter.Set(x =>
                     x.Doc, request.Doc
@@ -188,5 +218,22 @@ namespace ValueBlue.Web.BusinessLogic
             return result;
         }
 
+
+        public async Task<bool> IsExist(string id, string processId = null)
+        {
+            bool result = false;
+            try
+            {
+                var filter = Builders<OmdbEntity>.Filter;
+                var eqFilter = filter.Eq(x => x.search_token, id.ToUpper().Trim());
+
+                result = (await dbCollection.FindAsync<OmdbEntity>(eqFilter)).Any();
+            }
+            catch (Exception ex)
+            {
+                log.Error($"[MongoRepo] IsExist error:: processId:{processId} Exception: {ex}");
+            }
+            return result;
+        }
     }
 }

@@ -3,11 +3,14 @@ ValueBlue Code Challenge Project to wrap the Open Movie Database API, Save respo
 ============================================================================
 ============================================================================
 
-1. Estimated time to complete assessment: 4hrs
+1. Estimated time to complete assessment: 5hrs
 
 2. Research time: 1hr
 
 3. Project implementation: 3hrs
+
+4. An additional 30 mins to implement: movie poster(image) search for admin was implemented as an additional feature. with an additional 30 mins development time
+4. An additional 30 mins to implement: searched movies report by title for admin was implemented as an additional feature. with an additional 30 mins development time
 ============================================================================
 
 Implementation:
@@ -17,13 +20,14 @@ B. Git repo created
 C. Initial commit 
 E. Api key implemented
 D. Swagger doc configured
-F. Image(Poster) Api implemeted
+F. Image(Poster) fetch and saved to db implemeted - added feature
 G. Search Endpoint implementation completed
 H. Admin Endpoints implementation completed
-I. Api testing done!
-J. Git push done!
-K. Git pull request
-L. Merge to master from dev branch done 
+I. Additional enpoint to get movie poster image (base64 encoded string) implemented - added feature
+J. Api testing done!
+K. Git push done!
+L. Git pull request
+M. Merge to master from dev branch done 
 ============================================================================
 
 Project TargetFramework = netcoreapp3.1
@@ -32,12 +36,14 @@ Project TargetFramework = netcoreapp3.1
 
 The following endpoints were implemented:
 
-api/Search/{title}: Retrieve OMDB info by title search
-api/Admin/all: Get all movies searched by users
-api/Admin/title/{title}: Get searched movie by title
-api/Admin/daterange/{startDate}/{endDate}: Get searched movies by date range
-api/Admin/report/{date}: Get searched movies report by date
-api/Admin/delete/{title}: Delete searched movie by title
+1.	api/Search/GetByTitle/{title}: Retrieve OMDB info by title search
+2.	api/Search/GetMoviePoster/{title}: Get movie poster (image) by title - addition
+3.	api/Admin/GetAll: Get all movies searched by users
+4.	api/Admin/GetByTitle/{title}: Get searched movie by title
+5.	api/Admin/GetByDateRange/{startDate}/{endDate}: Get searched movies by date range
+6.	api/Admin/Report/GetByDate/{date}: Get searched movies report by date using string format "dd-MM-yyyy"
+7.	api/Admin/Report/GetMostRequestByTitle/{title}: Get searched movies report by title - additiom
+8.	api/Admin/DeleteMovie/{title}: Delete searched movie by title
 ============================================================================
 
 
@@ -69,5 +75,5 @@ AppConfigs.CommonEndpoint hold settings/values for external services
 Log files can be found in \Logs in the root directory of the application.
 Directory may be change by editing the nlog.config file
 
-
+Unit Test was not implemented due to time constraint
 ============================================================================

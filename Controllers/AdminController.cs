@@ -26,7 +26,7 @@ namespace ValueBlue.Web.Controllers
         }
 
         [HttpGet]
-        [Route("all")]
+        [Route("GetAll")]
         [ProducesResponseType(typeof(List<OmdbDto>), 200)]
         [ProducesResponseType(typeof(string), 400)]
         [ProducesResponseType(typeof(string), 404)]
@@ -51,7 +51,16 @@ namespace ValueBlue.Web.Controllers
                     if (res.ResponseObjects.Any())
                         foreach (var item in res.ResponseObjects)
                         {
-                            result.Add((OmdbDto)item);
+                            var response = (OmdbDto)item;
+                            result.Add(new OmdbDto
+                            {
+                                imdbID = response.imdbID,
+                                ip_address = response.ip_address,
+                                processing_time_ms = response.processing_time_ms,
+                                search_token = response.search_token,
+                                timestamp = response.timestamp,
+                                _id = response._id
+                            });
                         }
                     else
                         return NotFound(ConstMessage.NOT_FOUND);
@@ -74,7 +83,7 @@ namespace ValueBlue.Web.Controllers
 
 
         [HttpGet]
-        [Route("title/{title}")]
+        [Route("GetByTitle/{title}")]
         [ProducesResponseType(typeof(OmdbDto), 200)]
         [ProducesResponseType(typeof(string), 400)]
         [ProducesResponseType(typeof(string), 404)]
@@ -98,9 +107,23 @@ namespace ValueBlue.Web.Controllers
 
                 if (res.Status)
                 {
-                    result = (OmdbDto)res.ResponseObject;
-                    if (result is null)
+                    var response = (OmdbDto)res.ResponseObject;
+
+                    if (response is null)
                         return NotFound(ConstMessage.NOT_FOUND);
+                    else
+                    {
+                        result = new OmdbDto
+                        {
+                            imdbID = response.imdbID,
+                            ip_address = response.ip_address,
+                            processing_time_ms = response.processing_time_ms,
+                            search_token = response.search_token,
+                            timestamp = response.timestamp,
+                            _id = response._id
+                        };
+                    }
+
                 }
                 else
                 {
@@ -120,7 +143,7 @@ namespace ValueBlue.Web.Controllers
 
 
         [HttpGet]
-        [Route("daterange/{startDate}/{endDate}")]
+        [Route("GetByDateRange/{startDate}/{endDate}")]
         [ProducesResponseType(typeof(List<OmdbDto>), 200)]
         [ProducesResponseType(typeof(string), 400)]
         [ProducesResponseType(typeof(string), 404)]
@@ -148,7 +171,16 @@ namespace ValueBlue.Web.Controllers
                     if (res.ResponseObjects.Any())
                         foreach (var item in res.ResponseObjects)
                         {
-                            result.Add((OmdbDto)item);
+                            var response = (OmdbDto)item;
+                            result.Add(new OmdbDto
+                            {
+                                imdbID = response.imdbID,
+                                ip_address = response.ip_address,
+                                processing_time_ms = response.processing_time_ms,
+                                search_token = response.search_token,
+                                timestamp = response.timestamp,
+                                _id = response._id
+                            });
                         }
                     else
                         return NotFound(ConstMessage.NOT_FOUND);
@@ -171,12 +203,12 @@ namespace ValueBlue.Web.Controllers
 
 
         [HttpGet]
-        [Route("report/{date}")]
+        [Route("Report/GetByDate/{date}")]
         [ProducesResponseType(typeof(List<RequestStat>), 200)]
         [ProducesResponseType(typeof(string), 400)]
         [ProducesResponseType(typeof(string), 404)]
         [ProducesResponseType(typeof(string), 500)]
-        public async Task<IActionResult> GetByDateRange(string date)
+        public async Task<IActionResult> GetMostRequestByDate(string date)
         {
             var processId = $"{Guid.NewGuid()}";
 
@@ -200,7 +232,7 @@ namespace ValueBlue.Web.Controllers
                         foreach (var item in res.usages)
                         {
                             var q = (UsageReport)item;
-                            result.Add(new RequestStat {Timestamp = q.Day, Count = q.Count.Count });
+                            result.Add(new RequestStat { Timestamp = q.Day, Count = q.Count.Count });
                         }
                     else
                         return NotFound(ConstMessage.NOT_FOUND);
@@ -223,8 +255,61 @@ namespace ValueBlue.Web.Controllers
         }
 
 
+        [HttpGet]
+        [Route("Report/GetMostRequestByTitle/{title}")]
+        [ProducesResponseType(typeof(List<StatByTitleRptDto>), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string), 404)]
+        [ProducesResponseType(typeof(string), 500)]
+        public async Task<IActionResult> GetMostRequestByTitle(string title)
+        {
+            var processId = $"{Guid.NewGuid()}";
+
+            List<StatByTitleRptDto> result = new List<StatByTitleRptDto>();
+
+            try
+            {
+                log.Info($"[{Request.Path.Value}] - Generate movies report by Title request:: Title:{title}/ processId:{processId}");
+
+                if (string.IsNullOrWhiteSpace(title))
+                    return BadRequest(string.Format(ConstMessage.BAD_REQUEST, "title"));
+
+                var res = await _callserv.GenerateMovieReportByTile(title, processId);
+
+                if (res is null)
+                    return StatusCode(500, ConstMessage.INTERNAL_ERROR);
+
+                if (res.Status)
+                {
+                    if (res.TitleRpts.Any())
+                        foreach (var item in res.TitleRpts)
+                        {
+                            var q = (RequestStatByTitle)item;
+                            result.Add(new StatByTitleRptDto { Title = q.search_token, Count = q.Count });
+                        }
+                    else
+                        return NotFound(ConstMessage.NOT_FOUND);
+                }
+                else
+                {
+                    return NotFound((string)res.Message);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                log.Error($"Generate movies report by title internal error:: exception:{ex}/processId: {processId}");
+                return StatusCode(500, ConstMessage.INTERNAL_ERROR);
+            }
+
+            log.Info($"Generate movies report by title response:: Date:{title}/ processId:{processId}");
+
+            return Ok(result);
+        }
+
+
         [HttpDelete]
-        [Route("delete/{title}")]
+        [Route("DeleteMovie/{title}")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(string), 400)]
         [ProducesResponseType(typeof(string), 404)]
@@ -263,7 +348,6 @@ namespace ValueBlue.Web.Controllers
 
             return Ok(result);
         }
-
 
     }
 }

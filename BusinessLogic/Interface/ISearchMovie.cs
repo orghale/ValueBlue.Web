@@ -8,6 +8,7 @@ namespace ValueBlue.Web.BusinessLogic.Interface
 {
     public interface ISearchMovie
     {
-        Task<ApiResponseEntity> GetMovieFromOmdbApi(string title, string ip, string requestId);
+        Task<ImageSearchResponse> GetMovieFromOmdbApi(string title, string ip, string requestId);
+        Task<CommonResObj> GetMoviePoster(string title, string ip, string requestId);
     }
 }
