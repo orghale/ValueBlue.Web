@@ -9,7 +9,7 @@ ValueBlue Code Challenge Project to wrap the Open Movie Database API, Save respo
 
 3. Project implementation: 3hrs
 
-4. An additional 30 mins to implement: movie poster(image) search for admin was implemented as an additional feature. with an additional 30 mins development time
+4. An additional 30 mins to implement: movie poster(image) search for users was implemented as an additional feature. with an additional 30 mins development time
 4. An additional 30 mins to implement: searched movies report by title for admin was implemented as an additional feature. with an additional 30 mins development time
 ============================================================================
 
@@ -27,7 +27,7 @@ I. Additional enpoint to get movie poster image (base64 encoded string) implemen
 J. Api testing done!
 K. Git push done!
 L. Git pull request
-M. Merge to master from dev branch done 
+M. Merge to master from dev branch done
 ============================================================================
 
 Project TargetFramework = netcoreapp3.1
