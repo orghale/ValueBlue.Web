@@ -9,8 +9,6 @@ namespace ValueBlue.Web.Models
 {
     public class OmdbEntity : OmdbDto
     {
-        //public ApiResponseEntity Details { get; set; }OmdbEntity
-        //public LogDetails  LogDetails { get; set; }
         public object Doc { get; set; }
     }
 
@@ -37,13 +35,7 @@ namespace ValueBlue.Web.Models
         public string search_token { get; set; }
         public int Count { get; set; }
     }
-
-    public class StatByTitleRpt
-    {
-        public string Title { get; set; }
-        public List<int> Count { get; set; }
-    }
-
+    
     public class StatByTitleRptDto
     {
         public string Title { get; set; }
